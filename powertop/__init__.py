@@ -2,18 +2,18 @@ import csv
 import tempfile
 import subprocess
 
-__all__ = ['Powertop', 'Section']
+__all__ = ['Powertop', 'Table']
 
-class Section:
+class Table:
     def __init__(self, header, rows):
         self.header = header
         self._rows = rows
 
     def rows(self):
         return [dict(zip(self.header, row)) for row in self._rows]
-    
+
     def __repr__(self):
-        return 'Section(header={!r}, rows={!r})'.format(self.header, self._rows)
+        return 'Table(header={!r}, rows={!r})'.format(self.header, self._rows)
 
 class Powertop:
     def __init__(self, *, command=('/usr/sbin/powertop', '--quiet'), env=None):
@@ -28,7 +28,6 @@ class Powertop:
         return self._parse_output(output)
 
     def _run(self, *, time, iterations):
-        return open('powertop2.csv').readlines()
         with tempfile.NamedTemporaryFile(mode='w+', suffix='.csv') as fd:
             arguments = (
                     '--csv={}'.format(fd.name),
@@ -41,8 +40,8 @@ class Powertop:
     def _parse_output(self, lines):
         (delimiter, version) = self._detect_characteristics(lines)
         sections = self._split_sections(lines)
-        d = dict(self._parse_section(section, delimiter=delimiter)
-                for section in sections)
+        d = {name: self._parse_section(section, delimiter=delimiter)
+                for (name, section) in sections.items() if section != [[]]}
         if None in d:
             del d[None]
         return d
@@ -59,27 +58,46 @@ class Powertop:
         raise ValueError('PowerTOP version/delimiter not found (too recent/old?).')
 
     def _split_sections(self, lines):
+        current_table = []
         current_section = []
-        sections = [current_section]
+        section_header = None
+        sections = {}
         for line in lines:
             line = line.strip()
             if set(line) == {'_'}: # all characters are _
                 if current_section:
+                    if section_header != 'P o w e r T O P':
+                        sections[section_header] = current_section
+                    section_header = None
                     current_section = []
-                    sections.append(current_section)
-            elif line == '':
-                continue
+            elif section_header is None:
+                section_header = line.strip(' *')
             else:
                 current_section.append(line)
         return sections
 
     def _parse_section(self, lines, delimiter):
-        name = lines[0].strip(' *')
+        tables = []
+        current_lines = []
 
-        data = csv.reader(lines[1:], delimiter=delimiter)
+        for line in lines:
+            if line == '':
+                if current_lines:
+                    tables.append(self._parse_table(current_lines, delimiter=delimiter))
+                    current_lines = []
+            else:
+                current_lines.append(line)
+        if current_lines:
+            tables.append(self._parse_table(current_lines, delimiter=delimiter))
+            current_lines = []
+
+        return tables
+
+    def _parse_table(self, lines, delimiter):
+        data = csv.reader(lines, delimiter=delimiter)
         try:
             header = next(data)
         except StopIteration:
             return (None, None)
         rows = list(data)
-        return (name, Section(header, rows))
+        return Table(header, rows)

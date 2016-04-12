@@ -2,9 +2,15 @@
 
 A wrapper to use [PowerTOP](https://01.org/powertop/) easily in Python.
 
+## Install
+
+```
+sudo python3 -m pip install powertop
+```
+
 ## Short example
 
-Run as root:
+Run as root, in a Python 3 shell:
 
 ```
 import powertop
@@ -12,7 +18,7 @@ import pprint
 
 measures = powertop.Powertop().get_measures(time=1)
 
-pprint.pprint(measures['Device Power Report'].rows())
+pprint.pprint(measures['Device Power Report'][0].rows())
 ```
 
 Outputs:
@@ -25,12 +31,6 @@ Outputs:
  {'Device Name': 'GPU core', 'Usage': '67,4 ops/s'},
  {'Device Name': 'Display backlight', 'Usage': '26,4%'},
  ...
-```
-
-## Install
-
-```
-sudo python3 -m pip install powertop
 ```
 
 ## How to use
@@ -67,8 +67,8 @@ sudo python3 -c "import powertop; measures = powertop.Powertop().get_measures(ti
 
 ### Reading sections
 
-Each sections contains decoded CSV data.
+Each section is a list of CSV-decoded arrays
 
-Use `measure['Section Name'].rows()` to get the content of a section, as a list of dicts (`header => value`).
+Use `measure['Section Name'][i].rows()` to get the content of the `i`th table section, as a list of dicts (`header => value`).
 
-PowerTOP concatenates arrays, so headers do not make sense for all sections.
+PowerTOP's tables do not always make sense (eg. two different tables concatenated), you will have to figure out how to use them.
