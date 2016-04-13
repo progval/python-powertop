@@ -90,8 +90,6 @@ sudo python3 -c "import powertop; measures = powertop.Powertop().get_measures(ti
 
 ### Reading sections
 
-Each section is a list of CSV-decoded arrays
+Each section is a list JSON-like data (strings, lists and dicts).
 
-Use `measure['Section Name'][i].rows()` to get the content of the `i`th table section, as a list of dicts (`header => value`).
-
-PowerTOP's tables do not always make sense (eg. two different tables concatenated), you will have to figure out how to use them.
+Run `sudo python3 -m powertop` to get a taste of what it looks like.
