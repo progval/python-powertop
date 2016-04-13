@@ -14,22 +14,37 @@ Run as root, in a Python 3 shell:
 
 ```
 import powertop
-import pprint
+import json
 
 measures = powertop.Powertop().get_measures(time=1)
 
-pprint.pprint(measures['Device Power Report'][0].rows())
+print(json.dumps(measures['Device Power Report'], indent=4))
 ```
 
 Outputs:
 
 ```
-[{'Device Name': 'CPU misc', 'Usage': '29,3%'},
- {'Device Name': 'DRAM', 'Usage': '29,3%'},
- {'Device Name': 'CPU core', 'Usage': '29,3%'},
- {'Device Name': 'GPU misc', 'Usage': '67,4 ops/s'},
- {'Device Name': 'GPU core', 'Usage': '67,4 ops/s'},
- {'Device Name': 'Display backlight', 'Usage': '26,4%'},
+[
+    {
+        "Usage": "66.4%",
+        "Device Name": "CPU core"
+    },
+    {
+        "Usage": "66.4%",
+        "Device Name": "DRAM"
+    },
+    {
+        "Usage": "66.4%",
+        "Device Name": "CPU misc"
+    },
+    {
+        "Usage": "18.8 ops/s",
+        "Device Name": "GPU misc"
+    },
+    {
+        "Usage": "18.8 ops/s",
+        "Device Name": "GPU core"
+    },
  ...
 ```
 
