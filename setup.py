@@ -5,7 +5,7 @@ from setuptools import setup
 
 setup(
         name='powertop',
-        version='0.1',
+        version='0.1.1',
         description='Small wrapper to use PowerTOP in Python',
         author='Valentin Lorentz',
         author_email='valentin.lorentz+git@ens-lyon.org',
