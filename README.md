@@ -2,6 +2,8 @@
 
 A wrapper to use [PowerTOP](https://01.org/powertop/) easily in Python.
 
+Also provides a command to get the results as JSON.
+
 ## Install
 
 ```
