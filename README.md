@@ -6,9 +6,8 @@ Also provides a command to get the results as JSON.
 
 ## Install
 
-```
-sudo python3 -m pip install powertop
-```
+* install PowerTOP (e.g. `sudo aptitude install powertop` on Debian-based distributions)
+* `sudo python3 -m pip install powertop`
 
 ## Short example
 
